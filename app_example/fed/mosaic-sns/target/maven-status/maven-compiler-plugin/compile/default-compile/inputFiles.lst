@@ -1,0 +1,10 @@
+/home/miguel/apps/app_example/fed/mosaic-sns/src/main/java/org/eclipse/mosaic/fed/sns/model/SimpleAdhocTransmissionModel.java
+/home/miguel/apps/app_example/fed/mosaic-sns/src/main/java/org/eclipse/mosaic/fed/sns/ambassador/SimulationNode.java
+/home/miguel/apps/app_example/fed/mosaic-sns/src/main/java/org/eclipse/mosaic/fed/sns/model/SophisticatedAdhocTransmissionModel.java
+/home/miguel/apps/app_example/fed/mosaic-sns/src/main/java/org/eclipse/mosaic/fed/sns/ambassador/SnsAmbassador.java
+/home/miguel/apps/app_example/fed/mosaic-sns/src/main/java/org/eclipse/mosaic/fed/sns/model/AdhocTransmissionModel.java
+/home/miguel/apps/app_example/fed/mosaic-sns/src/main/java/org/eclipse/mosaic/fed/sns/util/AdhocTransmissionModelTypeAdapterFactory.java
+/home/miguel/apps/app_example/fed/mosaic-sns/src/main/java/org/eclipse/mosaic/fed/sns/model/TransmissionParameter.java
+/home/miguel/apps/app_example/fed/mosaic-sns/src/main/java/org/eclipse/mosaic/fed/sns/ambassador/TransmissionSimulator.java
+/home/miguel/apps/app_example/fed/mosaic-sns/src/main/java/org/eclipse/mosaic/fed/sns/ambassador/SimulationEntities.java
+/home/miguel/apps/app_example/fed/mosaic-sns/src/main/java/org/eclipse/mosaic/fed/sns/config/CSns.java

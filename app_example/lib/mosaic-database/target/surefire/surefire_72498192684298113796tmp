@@ -1,0 +1,5 @@
+#surefire_7
+#Thu Apr 11 23:13:20 WEST 2024
+basedir=/home/miguel/apps/app_example/lib/mosaic-database
+localRepository=/home/miguel/.m2/repository
+user.dir=/home/miguel/apps/app_example/lib/mosaic-database

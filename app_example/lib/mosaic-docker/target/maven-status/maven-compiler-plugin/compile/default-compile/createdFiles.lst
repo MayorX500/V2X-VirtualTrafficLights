@@ -1,0 +1,5 @@
+org/eclipse/mosaic/lib/docker/DockerCommandLine.class
+org/eclipse/mosaic/lib/docker/DockerClient.class
+org/eclipse/mosaic/lib/docker/DockerRun.class
+org/eclipse/mosaic/lib/docker/DockerContainer.class
+org/eclipse/mosaic/lib/docker/DockerRuntimeException.class

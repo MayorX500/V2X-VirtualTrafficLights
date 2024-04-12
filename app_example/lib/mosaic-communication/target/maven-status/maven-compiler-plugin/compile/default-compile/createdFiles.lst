@@ -1,0 +1,10 @@
+org/eclipse/mosaic/lib/model/delay/SimpleRandomDelay.class
+org/eclipse/mosaic/lib/model/transmission/TransmissionModel.class
+org/eclipse/mosaic/lib/model/delay/ConstantDelay.class
+org/eclipse/mosaic/lib/model/delay/GammaDelay.class
+org/eclipse/mosaic/lib/model/delay/Delay.class
+org/eclipse/mosaic/lib/model/gson/DelayTypeAdapterFactory.class
+org/eclipse/mosaic/lib/model/transmission/CTransmission.class
+org/eclipse/mosaic/lib/model/transmission/TransmissionResult.class
+org/eclipse/mosaic/lib/model/delay/GammaSpeedDelay.class
+org/eclipse/mosaic/lib/model/delay/GammaRandomDelay.class

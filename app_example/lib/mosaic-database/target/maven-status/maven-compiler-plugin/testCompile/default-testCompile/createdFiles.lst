@@ -1,0 +1,11 @@
+org/eclipse/mosaic/lib/database/persistence/SQLiteReaderTest.class
+org/eclipse/mosaic/lib/database/road/RestrictionTest.class
+org/eclipse/mosaic/lib/database/road/ConnectionTest.class
+org/eclipse/mosaic/lib/database/route/RouteTest.class
+org/eclipse/mosaic/lib/database/spatial/NodeFinderTest.class
+org/eclipse/mosaic/lib/database/road/WayTest.class
+org/eclipse/mosaic/lib/database/spatial/EdgeFinderTest.class
+org/eclipse/mosaic/lib/database/road/RoundaboutTest.class
+org/eclipse/mosaic/lib/database/persistence/SQLiteAccessTest.class
+org/eclipse/mosaic/lib/database/DatabaseTest.class
+org/eclipse/mosaic/lib/database/road/NodeTest.class

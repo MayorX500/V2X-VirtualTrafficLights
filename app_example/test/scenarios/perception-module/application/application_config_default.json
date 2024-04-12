@@ -1,0 +1,13 @@
+{
+    "perceptionConfiguration": {
+        "vehicleIndex": {
+            "enabled": true
+        },
+        "trafficLightIndex": {
+            "enabled": true
+        },
+        "wallIndex": {
+            "enabled": true
+        }
+    }
+}

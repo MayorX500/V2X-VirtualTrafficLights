@@ -1,0 +1,17 @@
+org/eclipse/mosaic/lib/routing/util/RouteFixerTest.class
+org/eclipse/mosaic/lib/routing/graphhopper/util/DatabaseGraphLoaderTest$1.class
+org/eclipse/mosaic/lib/routing/graphhopper/util/DatabaseGraphLoaderTest.class
+org/eclipse/mosaic/lib/routing/graphhopper/algorithm/AlternativeRoutesRoutingTest.class
+org/eclipse/mosaic/lib/routing/graphhopper/util/WayTypeEncoderTest.class
+org/eclipse/mosaic/lib/routing/graphhopper/util/GraphhopperToDatabaseMapperTest.class
+org/eclipse/mosaic/lib/routing/graphhopper/util/TurnCostAnalyzerTest.class
+org/eclipse/mosaic/lib/routing/database/DatabaseRoutingTest.class
+org/eclipse/mosaic/lib/routing/CharlottenburgRoutingTest.class
+org/eclipse/mosaic/lib/routing/graphhopper/util/DatabaseGraphLoaderTest$EdgeAssert.class
+org/eclipse/mosaic/lib/routing/graphhopper/junit/TestGraphRule.class
+org/eclipse/mosaic/lib/routing/graphhopper/GraphHopperRoutingTest.class
+org/eclipse/mosaic/lib/routing/database/LazyLoadingRoadPositionTest.class
+org/eclipse/mosaic/lib/routing/graphhopper/util/GHListHelper.class
+org/eclipse/mosaic/lib/routing/database/RouteManagerTest.class
+org/eclipse/mosaic/lib/routing/graphhopper/algorithm/BellmanFordRoutingTest.class
+org/eclipse/mosaic/lib/routing/graphhopper/GraphHopperWeightingTest.class

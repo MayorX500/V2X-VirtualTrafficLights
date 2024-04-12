@@ -1,0 +1,5 @@
+#surefire_0
+#Thu Apr 11 23:13:00 WEST 2024
+basedir=/home/miguel/apps/app_example/lib/mosaic-docker
+localRepository=/home/miguel/.m2/repository
+user.dir=/home/miguel/apps/app_example/lib/mosaic-docker

@@ -1,0 +1,6 @@
+org/eclipse/mosaic/fed/environment/ambassador/EnvironmentAmbassador.class
+org/eclipse/mosaic/fed/environment/config/CEventLocation.class
+org/eclipse/mosaic/fed/environment/config/CEventType.class
+org/eclipse/mosaic/fed/environment/config/CEvent.class
+org/eclipse/mosaic/fed/environment/config/CEventTime.class
+org/eclipse/mosaic/fed/environment/config/CEnvironment.class

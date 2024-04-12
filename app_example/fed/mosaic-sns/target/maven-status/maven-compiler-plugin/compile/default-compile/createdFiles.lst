@@ -1,0 +1,12 @@
+org/eclipse/mosaic/fed/sns/ambassador/TransmissionSimulator$1.class
+org/eclipse/mosaic/fed/sns/config/CSns.class
+org/eclipse/mosaic/fed/sns/model/SophisticatedAdhocTransmissionModel.class
+org/eclipse/mosaic/fed/sns/util/AdhocTransmissionModelTypeAdapterFactory.class
+org/eclipse/mosaic/fed/sns/ambassador/SimulationNode.class
+org/eclipse/mosaic/fed/sns/model/TransmissionParameter.class
+org/eclipse/mosaic/fed/sns/ambassador/TransmissionSimulator.class
+org/eclipse/mosaic/fed/sns/ambassador/SimulationEntities.class
+org/eclipse/mosaic/fed/sns/ambassador/SnsAmbassador.class
+org/eclipse/mosaic/fed/sns/model/AdhocTransmissionModel.class
+org/eclipse/mosaic/fed/sns/model/SimpleAdhocTransmissionModel.class
+org/eclipse/mosaic/fed/sns/ambassador/SnsAmbassador$1.class
