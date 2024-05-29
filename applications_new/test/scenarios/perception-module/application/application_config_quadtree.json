@@ -1,0 +1,16 @@
+{
+    "perceptionConfiguration": {
+        "vehicleIndex": {
+            "enabled": true,
+            "type": "tree",
+            "splitSize": 10,
+            "maxDepth": 2
+        },
+        "trafficLightIndex": {
+            "enabled": true
+        },
+        "wallIndex": {
+            "enabled": true
+        }
+    }
+}
