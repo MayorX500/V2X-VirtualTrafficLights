@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: org.eclipse.mosaic.lib.routing.database.RouteManagerTest
--------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.07 s - in org.eclipse.mosaic.lib.routing.database.RouteManagerTest

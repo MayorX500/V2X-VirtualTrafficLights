@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: org.eclipse.mosaic.lib.routing.database.DatabaseRoutingTest
--------------------------------------------------------------------------------
-Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.611 s - in org.eclipse.mosaic.lib.routing.database.DatabaseRoutingTest

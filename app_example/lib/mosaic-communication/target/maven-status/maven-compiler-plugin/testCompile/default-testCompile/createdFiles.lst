@@ -1,7 +1,0 @@
-org/eclipse/mosaic/lib/model/delay/SimpleRandomDelayTest.class
-org/eclipse/mosaic/lib/model/transmission/TransmissionModelTest.class
-org/eclipse/mosaic/lib/model/delay/ConstantDelayTest.class
-org/eclipse/mosaic/lib/model/gson/DelayTypeAdapterFactoryTest$CDelayList.class
-org/eclipse/mosaic/lib/model/delay/GammaSpeedDelayTest.class
-org/eclipse/mosaic/lib/model/delay/GammaRandomDelayTest.class
-org/eclipse/mosaic/lib/model/gson/DelayTypeAdapterFactoryTest.class

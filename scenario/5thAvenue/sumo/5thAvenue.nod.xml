@@ -1,0 +1,10 @@
+<nodes>
+	<node id="10943102727" x="585391.63" y="4510788.34" z="0.00" type="priority" />
+	<node id="42429874" x="585424.19" y="4510770.64" z="0.00" type="traffic_light" />
+	<node id="42429876" x="585559.84" y="4510696.72" z="0.00" type="traffic_light" />
+	<node id="42434800" x="585461.30" y="4510839.48" z="0.00" type="traffic_light" />
+	<node id="42453624" x="585385.44" y="4510701.47" z="0.00" type="traffic_light" />
+	<node id="7369969947" x="585356.93" y="4510806.98" z="0.00" type="priority" />
+	<node id="7372860099" x="585396.21" y="4510704.43" z="0.00" type="priority" />
+	<node id="7372860100" x="585413.38" y="4510750.99" z="0.00" type="priority" />
+</nodes>

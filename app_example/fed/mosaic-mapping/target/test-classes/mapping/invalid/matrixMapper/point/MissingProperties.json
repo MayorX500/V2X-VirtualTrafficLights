@@ -1,9 +1,0 @@
-{
-    "matrixMappers": [
-        {
-            "points": [ { } ],
-            "types": [ ],
-            "odValues": [ [ 0, 1 ], [ 2, 3 ] ]
-        }
-    ]
-}

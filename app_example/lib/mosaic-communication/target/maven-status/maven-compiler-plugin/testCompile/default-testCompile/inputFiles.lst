@@ -1,6 +1,0 @@
-/home/miguel/apps/app_example/lib/mosaic-communication/src/test/java/org/eclipse/mosaic/lib/model/delay/GammaSpeedDelayTest.java
-/home/miguel/apps/app_example/lib/mosaic-communication/src/test/java/org/eclipse/mosaic/lib/model/gson/DelayTypeAdapterFactoryTest.java
-/home/miguel/apps/app_example/lib/mosaic-communication/src/test/java/org/eclipse/mosaic/lib/model/delay/SimpleRandomDelayTest.java
-/home/miguel/apps/app_example/lib/mosaic-communication/src/test/java/org/eclipse/mosaic/lib/model/delay/ConstantDelayTest.java
-/home/miguel/apps/app_example/lib/mosaic-communication/src/test/java/org/eclipse/mosaic/lib/model/delay/GammaRandomDelayTest.java
-/home/miguel/apps/app_example/lib/mosaic-communication/src/test/java/org/eclipse/mosaic/lib/model/transmission/TransmissionModelTest.java

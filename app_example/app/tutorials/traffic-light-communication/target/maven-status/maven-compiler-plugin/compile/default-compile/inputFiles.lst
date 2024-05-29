@@ -1,8 +1,0 @@
-/home/miguel/apps/app_example/app/tutorials/traffic-light-communication/src/main/java/org/eclipse/mosaic/app/tutorial/TrafficLightApp.java
-/home/miguel/apps/app_example/app/tutorials/traffic-light-communication/src/main/java/org/eclipse/mosaic/app/tutorial/message/IntraVehicleMsg.java
-/home/miguel/apps/app_example/app/tutorials/traffic-light-communication/src/main/java/org/eclipse/mosaic/app/tutorial/message/InterVehicleMsg.java
-/home/miguel/apps/app_example/app/tutorials/traffic-light-communication/src/main/java/org/eclipse/mosaic/app/tutorial/EventSendingApp.java
-/home/miguel/apps/app_example/app/tutorials/traffic-light-communication/src/main/java/org/eclipse/mosaic/app/tutorial/RoadSideUnitApp.java
-/home/miguel/apps/app_example/app/tutorials/traffic-light-communication/src/main/java/org/eclipse/mosaic/app/tutorial/VehicleToTrafficLightApp.java
-/home/miguel/apps/app_example/app/tutorials/traffic-light-communication/src/main/java/org/eclipse/mosaic/app/tutorial/message/GreenWaveMsg.java
-/home/miguel/apps/app_example/app/tutorials/traffic-light-communication/src/main/java/org/eclipse/mosaic/app/tutorial/EventProcessingApp.java

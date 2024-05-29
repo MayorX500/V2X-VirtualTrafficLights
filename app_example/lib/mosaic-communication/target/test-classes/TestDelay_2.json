@@ -1,5 +1,0 @@
-{
-  "delays": [
-    { "type": "ConstantDelay", "delay": 32000000 }
-  ]
-}

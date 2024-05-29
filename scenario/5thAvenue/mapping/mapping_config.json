@@ -1,0 +1,57 @@
+{
+  "prototypes": [
+    {
+      "name": "Car",
+      "applications": [
+        "org.eclipse.mosaic.app.tutorial.EventSendingApp",
+        "org.eclipse.mosaic.app.tutorial.EventProcessingApp"
+      ],
+      "accel": 1.5,
+      "decel": 4.5,
+      "length": 5.0,
+      "maxSpeed": 10.0,
+      "minGap": 2.5,
+      "sigma": 0.5,
+      "tau": 1,
+      "color": "red"
+    },
+    {
+      "name": "TrafficLightCar",
+      "applications": [
+        "org.eclipse.mosaic.app.tutorial.VehicleToTrafficLightApp"
+      ],
+      "color": "green"
+    },
+    {
+      "name": "RSU",
+      "applications": ["org.eclipse.mosaic.app.tutorial.RoadSideUnitApp"]
+    },
+    {
+      "name": "TrafficLight",
+      "applications": ["org.eclipse.mosaic.app.tutorial.TrafficLightApp"]
+    }
+  ],
+  "trafficLights": [
+    {
+      "name": "TrafficLight",
+      "tlGroupId": "42429874"
+    }
+  ],
+  "rsus": [
+    {
+      "name": "RSU",
+      "position": {
+        "latitude": 40.74336,
+        "longitude": -73.98813
+      }
+    }
+  ],
+  "vehicles": [
+    {
+      "startingTime": "10.0 s",
+      "route": "1",
+      "maxNumberVehicles": 120,
+      "types": [{ "name": "TrafficLightCar" }]
+    }
+  ]
+}

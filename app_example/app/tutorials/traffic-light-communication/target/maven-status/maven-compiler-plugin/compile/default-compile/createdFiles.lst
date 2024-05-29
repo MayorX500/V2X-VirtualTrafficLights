@@ -1,8 +1,0 @@
-org/eclipse/mosaic/app/tutorial/message/InterVehicleMsg.class
-org/eclipse/mosaic/app/tutorial/EventProcessingApp.class
-org/eclipse/mosaic/app/tutorial/TrafficLightApp.class
-org/eclipse/mosaic/app/tutorial/EventSendingApp.class
-org/eclipse/mosaic/app/tutorial/message/IntraVehicleMsg.class
-org/eclipse/mosaic/app/tutorial/VehicleToTrafficLightApp.class
-org/eclipse/mosaic/app/tutorial/message/GreenWaveMsg.class
-org/eclipse/mosaic/app/tutorial/RoadSideUnitApp.class
