@@ -117,8 +117,8 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
     @Override
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
         if (getOs().getId().equals("tl_0")){ // Only for traffic light 0
-            System.out.println("Traffic Light: " + getOs().getId() + "\nNumber of cars: " + cars_received.size());
-            System.out.println(cars_received.toString());
+            //System.out.println("Traffic Light: " + getOs().getId() + "\nNumber of cars: " + cars_received.size());
+            //System.out.println(cars_received.toString());
             getLog().infoSimTime(this, "Traffic Light: " + getOs().getId() + "\nNumber of cars: " + cars_received.size());
         }
         if (!(receivedV2xMessage.getMessage() instanceof GreenWaveMsg)) {
@@ -141,9 +141,9 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
             if (!cars_received.contains(receivedV2xMessage.getMessage().getRouting().getSource().getSourceAddress().toString())) {
                 cars_received.add(receivedV2xMessage.getMessage().getRouting().getSource().getSourceAddress().toString());
             }
-            System.out.println("LANES - " + getOperatingSystem().getControlledLanes().toString());
+            //System.out.println("LANES - " + getOperatingSystem().getControlledLanes().toString());
 
-            System.out.println(receivedV2xMessage.toString());
+            //System.out.println(receivedV2xMessage.toString());
 
             setGreen();
         }

@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.app.tutorial;
 
 import org.eclipse.mosaic.app.tutorial.message.GreenWaveMsg;
+import org.eclipse.mosaic.app.tutorial.message.RawPayload;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.RoadPositionFactory;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModuleConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
@@ -36,6 +37,7 @@ import org.slf4j.event.Level;
 
 public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleOperatingSystem> implements CommunicationApplication {
     private final static long TIME_INTERVAL = TIME.SECOND;
+    private final static String TRAFFIC_LIGHT_ID = "42429874";
 
     //Use TopoBroadcast instead of GeoBroadcast because latter is not compatible with OMNeT++ or ns-3
     private void sendTopoBroadcastMessage() {
@@ -44,7 +46,35 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
                 .createMessageRouting()
                 .topoBroadCast();
         getLog().warn(getOs().toString());
-        getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing,getOs().getId()));
+
+        CAM cam = new CAM();
+        var NavModule = getOs().getNavigationModule();
+        if (NavModule != null) {
+            var vehData = NavModule.getVehicleData();
+            if (vehData != null) {
+                var roadPos = vehData.getRoadPosition();
+                var currRoute = NavModule.getCurrentRoute();
+                cam.id = getOs().getId();
+                cam.speed = vehData.getSpeed();
+                cam.direction = vehData.getDriveDirection();
+                cam.isMovingTowards = NavModule.getNextTrafficLightNode().getId().equals(TRAFFIC_LIGHT_ID);;
+                cam.acceleration = vehData.getThrottle();
+                if (roadPos != null) {
+                    cam.lane = roadPos.getLaneIndex();
+                }
+                else {
+                    cam.lane = 0;
+                }
+                if (currRoute != null) {
+                    cam.route = currRoute.getId();
+                }
+                else {
+                    cam.route = "";
+                }
+            }
+        }
+        System.out.println(cam.toString());
+        getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing,new RawPayload(cam)));
         getLog().infoSimTime(this, "Sent secret passphrase");
     }
 
@@ -85,7 +115,7 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
 
     @Override
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
-        System.out.println("In CAR " + getOs().getId() + " - " +receivedV2xMessage.getMessage().toString());
+        //System.out.println("In CAR " + getOs().getId() + " - " +receivedV2xMessage.getMessage().toString());
     }
 
     @Override

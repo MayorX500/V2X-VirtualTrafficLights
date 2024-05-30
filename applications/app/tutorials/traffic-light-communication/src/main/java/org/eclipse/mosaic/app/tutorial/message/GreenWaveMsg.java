@@ -22,17 +22,22 @@ import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 import javax.annotation.Nonnull;
 
 public final class GreenWaveMsg extends V2xMessage {
-    private final String         message;
-    private final EncodedPayload payload;
+    private final RawPayload         message;
+    private final EncodedPayload     payload;
     private final static long    MIN_LEN = 8L;
 
-    public GreenWaveMsg(MessageRouting routing, String message) {
+    public GreenWaveMsg(MessageRouting routing, RawPayload message) {
         super(routing);
         this.message = message;
-        payload = new EncodedPayload(message.length(), MIN_LEN);
+        try {
+            byte[] raw_data = message.to_byte_array();
+            this.payload = new EncodedPayload(raw_data, MIN_LEN);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public String getMessage() {
+    public RawPayload getMessage() {
         return message;
     }
 
@@ -45,7 +50,7 @@ public final class GreenWaveMsg extends V2xMessage {
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("GreenWaveMsg{");
-        sb.append("message='").append(message).append('\'');
+        sb.append("message='").append(message.toString()).append('\'');
         sb.append('}');
         return sb.toString();
     }
