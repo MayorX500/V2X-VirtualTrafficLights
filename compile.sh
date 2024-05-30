@@ -6,7 +6,7 @@ here_path=$(pwd)
 
 function arguments {
     if [ -z "$1" ]; then
-        echo -ne "No argument passed \nContinue with default path? y/[n]"
+        echo -ne "No argument passed \nContinue with default path? y/[n] "
         read -r answer
         mosaic_path="/home/$(whoami)/apps/mosaic"
         if [ "$answer" = "y" ]; then
