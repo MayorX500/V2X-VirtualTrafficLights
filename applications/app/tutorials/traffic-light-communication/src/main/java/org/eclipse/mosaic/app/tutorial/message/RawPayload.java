@@ -25,11 +25,13 @@ import java.io.Serializable;
 public class RawPayload implements Serializable{
     private static final long serialVersionUID = 1L;
     public int payload_type;
+    public String destination;
     public Object payload;
 
-    public RawPayload(Object payload) {
+    public RawPayload(Object payload, String destination) {
         this.payload_type = payload.getClass().hashCode();
         this.payload = payload;
+        this.destination = destination;
     }
 
     public byte[] to_byte_array() throws IOException { 
@@ -51,6 +53,7 @@ public class RawPayload implements Serializable{
         return "RawPayload{" +
                 "payload_type=" + payload_type +
                 ", payload=" + payload +
+                ", destination='" + destination + '\'' +
                 '}';
     }
 }

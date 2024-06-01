@@ -18,10 +18,14 @@ package org.eclipse.mosaic.app.tutorial;
 import java.io.Serializable;
 
 import org.eclipse.mosaic.lib.enums.DriveDirection;
+import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.geo.MutableGeoPoint;
 
 // id, velocidade, direção, aceleração, lane, rota
 public class CAM implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static final int hash = 744012600;
+    public int TTL = 6;
     public String id; // vehicle id
     public double speed; // m/s
     public DriveDirection direction; // 0 = forward, 1 = backward
@@ -29,8 +33,9 @@ public class CAM implements Serializable {
     public double acceleration; // m/s^2
     public int lane; // lane number
     public String route; // route id
+    public GeoPoint position; // vehicle position
 
-    public CAM(String id, double speed, DriveDirection direction, boolean isMovingTowards, double acceleration, int lane, String route) {
+    public CAM(String id, double speed, DriveDirection direction, boolean isMovingTowards, double acceleration, int lane, String route, GeoPoint position) {
         this.id = id;
         this.speed = speed;
         this.direction = direction;
@@ -38,6 +43,7 @@ public class CAM implements Serializable {
         this.acceleration = acceleration;
         this.lane = lane;
         this.route = route;
+        this.position = position;
     }
 
     public CAM(){
@@ -48,6 +54,7 @@ public class CAM implements Serializable {
         this.acceleration = 0;
         this.lane = 0;
         this.route = "0";
+        this.position = new MutableGeoPoint(0, 0);
     }
 
     public String toString() {
@@ -59,7 +66,13 @@ public class CAM implements Serializable {
                 ", acceleration=" + acceleration +
                 ", lane=" + lane +
                 ", route='" + route + '\'' +
+                ", position=" + position +
                 '}';
+    }
+        
+    @Override
+    public int hashCode(){
+        return hash;
     }
     
 

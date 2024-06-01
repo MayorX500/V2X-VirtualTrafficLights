@@ -27,15 +27,25 @@ import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.TrafficLightOperatingSystem;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
-import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
+import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.geo.MutableGeoPoint;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
-import org.eclipse.mosaic.app.tutorial.message.GreenWaveMsg;
 
 
 public final class TrafficLightApp extends AbstractApplication<TrafficLightOperatingSystem> implements CommunicationApplication {
     public final static String SECRET = "open sesame!";
+    private final static long TIME_INTERVAL = TIME.SECOND / 100;
     private final static short GREEN_DURATION = 20; // Time to keep the traffic light green dunno if it's in seconds
+
+    private final static GeoPoint ROUTE1_GEO_POINT_S = new MutableGeoPoint(40.743507100880656, -73.98839394324335);
+    private final static GeoPoint ROUTE1_GEO_POINT_E = new MutableGeoPoint(40.7435594287452, -73.98834968677761);
+
+    private final static GeoPoint ROUTE2_GEO_POINT_S = new MutableGeoPoint(40.74357721003281, -73.98821423490355);
+    private final static GeoPoint ROUTE2_GEO_POINT_E = new MutableGeoPoint(40.7435152293083, -73.98807274823156);
+
+
+    
 
     private static final String DEFAULT_PROGRAM = "0"; // Default program id for traffic lights
     private static final String GREEN_PROGRAM = "2"; // Green program id for traffic lights
@@ -45,6 +55,21 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
     public List<String> cars_received = new ArrayList<String>(); // List of cars that have sent a message, are in range, and waiting the traffic light to turn green
     public boolean event_created = false; // Flag to check if the event to change back to red has been created
     
+    public static boolean isPointBetween(GeoPoint pointA, GeoPoint pointB, GeoPoint pointToCheck) {
+        double minLatitude = Math.min(pointA.getLatitude(), pointB.getLatitude());
+        double maxLatitude = Math.max(pointA.getLatitude(), pointB.getLatitude());
+        double minLongitude = Math.min(pointA.getLongitude(), pointB.getLongitude());
+        double maxLongitude = Math.max(pointA.getLongitude(), pointB.getLongitude());
+
+        return (pointToCheck.getLatitude() >= minLatitude && pointToCheck.getLatitude() <= maxLatitude) &&
+               (pointToCheck.getLongitude() >= minLongitude && pointToCheck.getLongitude() <= maxLongitude);
+    }
+
+    private void sendStatusMessage() {
+        
+    }
+
+
     @Override
     public void onStartup() {
         getLog().infoSimTime(this, "Initialize application");
@@ -61,19 +86,6 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
 
     private void setGreen() {
 
-        /*
-        String traffic_id = getOs().getId();
-
-        if (traffic_id.equals("tl_19")) {
-            getOs().switchToProgram(GREEN_PROGRAM);
-        }
-        else
-        if (traffic_id.equals("tl_14")) {
-            getOs().switchToProgram(GREEN_PROGRAM);
-        }
-        else
-        */
-
         if (cars_received.size() >= 2) {
             getOs().switchToProgram(GREEN_PROGRAM);
             getLog().infoSimTime(this, "Setting traffic lights to GREEN");
@@ -87,21 +99,6 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
                 (e) -> setRed()
             );
         }
-
-        //getOs().switchToProgram(GREEN_PROGRAM);
-
-		//getOs().switchToCustomState(trafficLightStates);
-        
-        //System.out.println("Get Current Phase:");
-        //System.out.println(getOs().getCurrentPhase().toString());
-        //System.out.println("Get Controlled Lanes:");
-        //System.out.println(getOs().getControlledLanes().toString());
-        //System.out.println("Get Current Program:");
-        //System.out.println(getOs().getCurrentProgram().toString());
-        //System.out.println("Get Traffic ID:");
-        //System.out.println(getOs().getId().toString());
-
-
     }
 
     private void setRed() {
@@ -116,17 +113,10 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
 
     @Override
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
-        if (getOs().getId().equals("tl_0")){ // Only for traffic light 0
-            //System.out.println("Traffic Light: " + getOs().getId() + "\nNumber of cars: " + cars_received.size());
-            //System.out.println(cars_received.toString());
-            getLog().infoSimTime(this, "Traffic Light: " + getOs().getId() + "\nNumber of cars: " + cars_received.size());
-        }
         if (!(receivedV2xMessage.getMessage() instanceof GreenWaveMsg)) {
             return;
         }
         getLog().infoSimTime(this, "Received GreenWaveMsg");
-
-        getLog().infoSimTime(this, "Received Vehicle ID: {}", SECRET);
 
         Validate.notNull(receivedV2xMessage.getMessage().getRouting().getSource().getSourcePosition(),
                 "The source position of the sender cannot be null");
@@ -143,11 +133,18 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
             }
             //System.out.println("LANES - " + getOperatingSystem().getControlledLanes().toString());
 
-            //System.out.println(receivedV2xMessage.toString());
+            System.out.println(((GreenWaveMsg) receivedV2xMessage.getMessage()).getMessage().toString());
 
             setGreen();
         }
 
+    }
+
+    private void sample() {
+        getOs().getEventManager().addEvent(
+                getOs().getSimulationTime() + TIME_INTERVAL, this
+        );
+        sendStatusMessage();
     }
 
     @Override
