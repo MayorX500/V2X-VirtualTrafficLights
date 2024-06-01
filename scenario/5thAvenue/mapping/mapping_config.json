@@ -17,10 +17,31 @@
     },
     {
       "name": "TrafficLightCar",
-      "applications": [
-        "org.eclipse.mosaic.app.tutorial.VehicleToTrafficLightApp"
-      ],
       "color": "green"
+    },
+    {
+      "name": "Route1",
+      "color": "red"
+    },
+    {
+      "name": "Route2",
+      "color": "green"
+    },
+    {
+      "name": "Route3",
+      "color": "blue"
+    },
+    {
+      "name": "Route4",
+      "color": "yellow"
+    },
+    {
+      "name": "Route5",
+      "color": "black"
+    },
+    {
+      "name": "Route6",
+      "color": "white"
     },
     {
       "name": "RSU",
@@ -41,8 +62,8 @@
     {
       "name": "RSU",
       "position": {
-        "latitude": 40.74336,
-        "longitude": -73.98813
+        "latitude": 40.74345704421306,
+        "longitude": -73.9882041133381
       }
     }
   ],
@@ -50,8 +71,44 @@
     {
       "startingTime": "10.0 s",
       "route": "1",
-      "maxNumberVehicles": 120,
+      "maxNumberVehicles": 1,
       "types": [{ "name": "TrafficLightCar" }]
+    },
+    {
+      "startingTime": "10.0 s",
+      "route": "1",
+      "maxNumberVehicles": 1,
+      "types": [{ "name": "Route1" }]
+    },
+    {
+      "startingTime": "10.0 s",
+      "route": "2",
+      "maxNumberVehicles": 1,
+      "types": [{ "name": "Route2" }]
+    },
+    {
+      "startingTime": "10.0 s",
+      "route": "3",
+      "maxNumberVehicles": 1,
+      "types": [{ "name": "Route3" }]
+    },
+    {
+      "startingTime": "10.0 s",
+      "route": "4",
+      "maxNumberVehicles": 1,
+      "types": [{ "name": "Route4" }]
+    },
+    {
+      "startingTime": "10.0 s",
+      "route": "5",
+      "maxNumberVehicles": 1,
+      "types": [{ "name": "Route5" }]
+    },
+    {
+      "startingTime": "10.0 s",
+      "route": "6",
+      "maxNumberVehicles": 1,
+      "types": [{ "name": "Route6" }]
     }
   ]
 }
