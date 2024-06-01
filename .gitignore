@@ -2,6 +2,6 @@
 
 *.jar
 
-*/target/
+*/target/*
 
 *.class
