@@ -20,7 +20,7 @@ import java.io.Serializable;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.MutableGeoPoint;
 
-public class ItsBritneyBitch implements Serializable{
+public class InDetectionZone implements Serializable{
     private static final int hash = 853508629;
     private static final long serialVersionUID = 1L;
     public String message = "It's Britney Bitch!";
@@ -30,13 +30,13 @@ public class ItsBritneyBitch implements Serializable{
     public int lane;
     public GeoPoint position;
 
-    public ItsBritneyBitch(String id,int route, int lane, GeoPoint position) {
+    public InDetectionZone(String id,int route, int lane, GeoPoint position) {
         this.route = route;
         this.lane = lane;
         this.position = position;
     }
 
-    public ItsBritneyBitch(){
+    public InDetectionZone(){
         this.id = "veh_x";
         this.route = 0;
         this.lane = 0;
