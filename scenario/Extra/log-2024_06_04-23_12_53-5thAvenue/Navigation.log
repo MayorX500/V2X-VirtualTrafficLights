@@ -1,0 +1,12 @@
+2024-06-04 00:12:54,520 INFO  CentralNavigationComponent - Initializing CNC-Navigation
+2024-06-04 00:12:54,830 INFO  ExtendedGraphHopper - start creating graph from database
+2024-06-04 00:12:54,877 INFO  LocationIndexTree - location index created in 0.008797825s, size:8, leafs:4, precision:300, depth:1, checksum:8, entries:[4], entriesPerLeaf:2.0
+2024-06-04 00:12:54,878 INFO  PrepareRoutingSubnetworks - start finding subnetworks (min:200, min one way:0) totalMB:44, usedMB:42
+2024-06-04 00:12:54,880 INFO  PrepareRoutingSubnetworks - 1 subnetworks found for car, totalMB:44, usedMB:42
+2024-06-04 00:12:54,880 INFO  PrepareRoutingSubnetworks - 1 subnetworks found for bike, totalMB:44, usedMB:42
+2024-06-04 00:12:54,880 INFO  PrepareRoutingSubnetworks - optimize to remove subnetworks (1), unvisited-dead-end-nodes (0), maxEdges/node (4)
+2024-06-04 00:12:54,881 INFO  ExtendedGraphHopper - edges: 7, nodes 8, there were 1 subnetworks. removed them => 0 less nodes
+2024-06-04 00:12:54,881 INFO  ExtendedGraphHopper - flushing graph car,bike|RAM|3D|turn_cost|5,15,4,3,3, details:edges:7(1MB), nodes:8(1MB), name:(1MB), geo:44(1MB), bounds:-73.9889856,-73.9865977,40.7427711,40.7440672,0.0,0.0, totalMB:44, usedMB:42)
+2024-06-04 00:12:54,881 INFO  ExtendedGraphHopper - flushed graph totalMB:44, usedMB:42)
+2024-06-04 00:12:54,881 INFO  CentralNavigationComponent - CNC - Navigation-System initialized
+2024-06-04 00:12:54,891 INFO  CentralNavigationComponent - Sending vehicle routes initialization
