@@ -23,9 +23,9 @@ public class TrafficLight {
 
     public TrafficLight() {
         for (int route = 1; route < 7 ; route++) {
+            trafficLightStatus.put(String.valueOf(route), new HashMap<>());
             for (int lane = 0; lane < 10; lane++) { // it has more lanes than the real road
-                trafficLightStatus.put("" + route, new HashMap<>());
-                trafficLightStatus.get("" + route).put("" + lane, TL.Status.RED);
+                trafficLightStatus.get(String.valueOf(route)).put(String.valueOf(lane), TL.Status.RED);
             }
         }
     }
@@ -49,10 +49,12 @@ public class TrafficLight {
 
     public HashMap<String,HashMap<String, TL.Status>> get_state() {
         HashMap<String, HashMap<String, TL.Status>> tl_state = new HashMap<>();
-        for (String route : trafficLightStatus.keySet()) {
-            tl_state.put(route, new HashMap<>());
-            for (String lane : trafficLightStatus.get(route).keySet()) {
-                tl_state.get(route).put(lane, trafficLightStatus.get(route).get(lane));
+        for (HashMap.Entry<String, Map<String, TL.Status>> entry : trafficLightStatus.entrySet()) {
+            for (HashMap.Entry<String, TL.Status> inner_entry : entry.getValue().entrySet()) {
+                if (!tl_state.containsKey(entry.getKey())) {
+                    tl_state.put(entry.getKey(), new HashMap<>());
+                }
+                tl_state.get(entry.getKey()).put(inner_entry.getKey(), inner_entry.getValue());
             }
         }
         return tl_state;

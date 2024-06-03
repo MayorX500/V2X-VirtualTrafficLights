@@ -35,7 +35,7 @@ import org.eclipse.mosaic.rti.TIME;
 
 public final class TrafficLightApp extends AbstractApplication<TrafficLightOperatingSystem> implements CommunicationApplication {
     public final static String SECRET = "open sesame!";
-    private final static long TIME_INTERVAL = TIME.SECOND / 100;
+    private final static long TIME_INTERVAL = TIME.SECOND / 4;
     private final static short GREEN_DURATION = 20; // Time to keep the traffic light green dunno if it's in seconds
 
     private final static GeoPoint ROUTE1_GEO_POINT_S = new MutableGeoPoint(40.743507100880656, -73.98839394324335);
