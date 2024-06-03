@@ -1,10 +1,18 @@
-<configuration>
-	<input>
-		<net-file value="5thAvenue.net.xml" />
-		<route-files value="5thAvenue.rou.xml" />
-	</input>
-	<time>
-		<begin value="0" />
-		<end value="1000" />
-	</time>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-06-03 02:36:10 by Eclipse SUMO sumo Version 1.19.0
+-->
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="5thAvenue.net.xml"/>
+        <route-files value="5thAvenue.rou.xml"/>
+    </input>
+
+    <time>
+        <begin value="0"/>
+        <end value="1000"/>
+    </time>
+
 </configuration>

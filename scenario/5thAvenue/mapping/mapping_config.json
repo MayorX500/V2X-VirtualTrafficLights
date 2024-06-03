@@ -6,109 +6,90 @@
         "org.eclipse.mosaic.app.tutorial.EventSendingApp",
         "org.eclipse.mosaic.app.tutorial.EventProcessingApp"
       ],
-      "accel": 1.5,
-      "decel": 4.5,
-      "length": 5.0,
-      "maxSpeed": 10.0,
-      "minGap": 2.5,
-      "sigma": 0.5,
-      "tau": 1,
-      "color": "red"
+      "accel": 1.0,
+      "decel": 1000,
+      "length": 3.0,
+      "maxSpeed": 15.0,
+      "minGap": 1.5,
+      "sigma": 0.2,
+      "tau": 1
     },
     {
-      "name": "TrafficLightCar",
-      "color": "green"
+      "name": "TrafficLightCarGreen",
+      "applications": [
+        "org.eclipse.mosaic.app.tutorial.VehicleToTrafficLightApp"
+      ],
+      "color": "green",
+      "accel": 1.0,
+      "decel": 1000,
+      "length": 3.0,
+      "maxSpeed": 15.0,
+      "minGap": 1.5,
+      "sigma": 0.2,
+      "tau": 1
     },
     {
-      "name": "Route1",
-      "color": "red"
+      "name": "TrafficLightCarRed",
+      "applications": [
+        "org.eclipse.mosaic.app.tutorial.VehicleToTrafficLightApp"
+      ],
+      "color": "red",
+      "accel": 1.0,
+      "decel": 1000,
+      "length": 3.0,
+      "maxSpeed": 15.0,
+      "minGap": 1.5,
+      "sigma": 0.2,
+      "tau": 1
     },
     {
-      "name": "Route2",
-      "color": "green"
+      "name": "TrafficLightCarBlue",
+      "applications": [
+        "org.eclipse.mosaic.app.tutorial.VehicleToTrafficLightApp"
+      ],
+      "color": "blue",
+      "accel": 1.0,
+      "decel": 1000,
+      "length": 3.0,
+      "maxSpeed": 15.0,
+      "minGap": 1.5,
+      "sigma": 0.2,
+      "tau": 1
     },
     {
-      "name": "Route3",
-      "color": "blue"
-    },
-    {
-      "name": "Route4",
-      "color": "yellow"
-    },
-    {
-      "name": "Route5",
-      "color": "black"
-    },
-    {
-      "name": "Route6",
-      "color": "white"
+      "name": "EmergencyVehicle",
+      "applications": [
+        "org.eclipse.mosaic.app.tutorial.VehicleToTrafficLightApp"
+      ],
+      "color": "yellow",
+      "accel": 1.0,
+      "decel": 1000,
+      "length": 3.0,
+      "maxSpeed": 15.0,
+      "minGap": 1.5,
+      "sigma": 0.2,
+      "tau": 1
     },
     {
       "name": "RSU",
       "applications": ["org.eclipse.mosaic.app.tutorial.RoadSideUnitApp"]
-    },
-    {
-      "name": "TrafficLight",
-      "applications": ["org.eclipse.mosaic.app.tutorial.TrafficLightApp"]
-    }
-  ],
-  "trafficLights": [
-    {
-      "name": "TrafficLight",
-      "tlGroupId": "42429874"
     }
   ],
   "rsus": [
     {
       "name": "RSU",
       "position": {
-        "latitude": 40.74345704421306,
-        "longitude": -73.9882041133381
+        "latitude": 40.743457,
+        "longitude": -73.988281
       }
     }
   ],
   "vehicles": [
     {
-      "startingTime": "10.0 s",
+      "startingTime": "0 s",
       "route": "1",
       "maxNumberVehicles": 1,
-      "types": [{ "name": "TrafficLightCar" }]
-    },
-    {
-      "startingTime": "10.0 s",
-      "route": "1",
-      "maxNumberVehicles": 1,
-      "types": [{ "name": "Route1" }]
-    },
-    {
-      "startingTime": "10.0 s",
-      "route": "2",
-      "maxNumberVehicles": 1,
-      "types": [{ "name": "Route2" }]
-    },
-    {
-      "startingTime": "10.0 s",
-      "route": "3",
-      "maxNumberVehicles": 1,
-      "types": [{ "name": "Route3" }]
-    },
-    {
-      "startingTime": "10.0 s",
-      "route": "4",
-      "maxNumberVehicles": 1,
-      "types": [{ "name": "Route4" }]
-    },
-    {
-      "startingTime": "10.0 s",
-      "route": "5",
-      "maxNumberVehicles": 1,
-      "types": [{ "name": "Route5" }]
-    },
-    {
-      "startingTime": "10.0 s",
-      "route": "6",
-      "maxNumberVehicles": 1,
-      "types": [{ "name": "Route6" }]
+      "types": [{ "name": "TrafficLightCarRed" }]
     }
   ]
 }
