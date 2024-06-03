@@ -176,7 +176,7 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
         }
     }
 
-    private MessageRouting buildRouting_toDestination(String destination_id) {
+    private MessageRouting buildRouting_toDestination(String destination_id, GeoPoint destination) {
         final AdHocMessageRoutingBuilder routing_builder = getOperatingSystem()
         .getAdHocModule()
         .createMessageRouting();
@@ -191,9 +191,13 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
             return routing_builder.topoCast(destination_id, 1);
         }
         else {
-            // Send broadcast message to all nearby vehicles ??? Probably not the best approach because STORM
-            // FIXME: Send message to the closest vehicle to the destination
-            return routing_builder.topoBroadCast();
+            var best_car = vehicles.get(vehicles.keySet().toArray()[0]);
+            for (CAM vehicle : this.vehicles.values()){
+                if (vehicle.position.distanceTo(destination) < best_car.position.distanceTo(destination)){
+                    best_car = vehicle;
+                }
+            }
+            return routing_builder.topoCast(best_car.id, 1);
         }
     }
 
@@ -279,7 +283,9 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
     }
 
     private void forward_control_queue(Pair<GreenWaveMsg,Long> queue){
-        var routing = buildRouting_toDestination(queue.getLeft().getMessage().destination);
+        var destination_position = ((Control) queue.getLeft().getMessage().payload).general_location;
+        var destination_id =((Control) queue.getLeft().getMessage().payload).to_who;
+        var routing = buildRouting_toDestination(destination_id,destination_position);
         if (routing == null){
             message_queue.offer(queue);
             return;
@@ -291,22 +297,29 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
 
         // question: how do i get the position of the destination vehicle?
         // answer: 
-        
-        var routing = buildRouting_toDestination(receivedMessage.getMessage().destination);
+        var destination_position = ((Control) receivedMessage.getMessage().payload).general_location;
+        var destination_id =((Control) receivedMessage.getMessage().payload).to_who;
+
+        System.out.println("Destination ID: " + destination_id);
+
+        var routing = buildRouting_toDestination(destination_id,destination_position);
         if (routing == null){
             getLog().infoSimTime(this, "No vehicles in range.");
             Pair<GreenWaveMsg,Long> queue = Pair.of(receivedMessage,getOs().getSimulationTime());
             message_queue.offer(queue);
+            System.out.println("--- Message Queued, No vehicles in range.");
             return;
         }
 
         Control control_message = (Control) receivedMessage.getMessage().payload;
         if (control_message.TTL <= 0){
+            System.out.println("--- Message Dropped, TTL exceeded.");
             // Drop this message
             return;
         }
         control_message.TTL = control_message.TTL-1;
-        getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing,new RawPayload(control_message, receivedMessage.getMessage().destination)));
+        System.out.println("--- Message Sent, to " + destination_id);
+        getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing,new RawPayload(control_message, destination_id)));
         getLog().infoSimTime(this, "Forwarded Control message to " + IpResolver.getSingleton().reverseLookup(routing.getDestination().getAddress().address));
 
     }
@@ -516,11 +529,10 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
         }
         GreenWaveMsg receivedMessage = (GreenWaveMsg) receivedV2xMessage.getMessage();
         var raw = receivedMessage.getMessage();
-        String send_to = receivedMessage.getMessage().destination;
 
         // Populate the vehicles map with the near vehicles in range
         if (raw.payload instanceof CAM) {
-            CAM cam = (CAM) receivedMessage.getMessage().payload;
+            CAM cam = (CAM) raw.payload;
             if (cam.position.distanceTo(getOs().getPosition()) <= MAX_DISTANCE_RANGE) {
                 getLog().infoSimTime(this, "Received CAM message from " + cam.id);
                 vehicles.put(cam.id, cam);
@@ -535,19 +547,13 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
             .distanceTo(getOs().getPosition()) > MAX_RSU_DISTANCE){
                 return;
             }
-            var destination = IpResolver.getSingleton().reverseLookup(receivedMessage.getRouting().getDestination().getAddress().address);
-            if (destination == null){
-                destination = " via Broadcast.";
-            }
-            else {
-                destination = " to " + destination;
-            }
+            Control control = (Control) raw.payload;
+            var destination = " to " + control.to_who;
             getLog().infoSimTime(this, "Received Control message from " + IpResolver.getSingleton().reverseLookup(receivedMessage.getRouting().getSource().getSourceAddress().address) + destination );
             // Check if the message is for this vehicle
                 // If yes OBEY
                 // If not send to another vehicle behind
-            if (send_to.equals(getOs().getId())) {
-                Control control = (Control) receivedMessage.getMessage().payload;
+            if (control.to_who.equals(getOs().getId())) {
                 // Follow the control message
                 follow_command(control);
             }
@@ -562,7 +568,7 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
                 return;
             }
             getLog().infoSimTime(this, "Received TL_Status message from " + IpResolver.getSingleton().reverseLookup(receivedMessage.getRouting().getSource().getSourceAddress().address) + " via Broadcast");
-            TL traffic_light = (TL) receivedMessage.getMessage().payload;
+            TL traffic_light = (TL) raw.payload;
             // Change state of vehicle based on the state of the traffic light
             managed_by_traffic_light(traffic_light);
             // Check status and act accordingly
