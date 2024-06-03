@@ -86,10 +86,22 @@
   ],
   "vehicles": [
     {
-      "startingTime": "0 s",
+      "startingTime": "10 s",
       "route": "1",
-      "maxNumberVehicles": 1,
+      "maxNumberVehicles": 50,
       "types": [{ "name": "TrafficLightCarRed" }]
+    },
+    {
+      "startingTime": "30 s",
+      "route": "3",
+      "maxNumberVehicles": 50,
+      "types": [{ "name": "TrafficLightCarGreen" }]
+    },
+    {
+      "startingTime": "0 s",
+      "route": "5",
+      "maxNumberVehicles": 50,
+      "types": [{ "name": "TrafficLightCarBlue" }]
     }
   ]
 }
