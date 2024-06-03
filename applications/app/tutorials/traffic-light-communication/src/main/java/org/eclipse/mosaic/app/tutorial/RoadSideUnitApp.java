@@ -48,7 +48,7 @@ public class RoadSideUnitApp extends AbstractApplication<RoadSideUnitOperatingSy
     private final static long TIME_INTERVAL = TIME.SECOND / 10;
     private final static String RSU_ID = "rsu_0";
     private final static Integer MAX_DISTANCE_RANGE = 50;
-    public final static long TRAFFIC_TIMER = 30 * TIME.SECOND;
+    public final static long TRAFFIC_TIMER = 100 * TIME.SECOND;
 
 
     public Map<String,CAM> car_table = new HashMap<String,CAM>();

@@ -46,8 +46,8 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
     private final static long TIME_INTERVAL = TIME.SECOND / 10;
     private final static String JUNCTION_ID = "42429874";
     private final static String TL_ID = "rsu_0";
-    private final static Integer MAX_DISTANCE_RANGE = 50;
-    private final static Integer MAX_RSU_DISTANCE = 50;
+    private final static Integer MAX_DISTANCE_RANGE = 30;
+    private final static Integer MAX_RSU_DISTANCE = 30;
     private final static long MAX_MESSAGE_WAIT = TIME.SECOND * 10;
     private final static long STOP_TIME = 5 * TIME.SECOND;
 
@@ -57,7 +57,7 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
     private final static GeoPoint ROUTE123_STOP_POINT_0 = new MutableGeoPoint(40.743499, -73.988424);
     private final static GeoPoint ROUTE123_STOP_POINT_1 = new MutableGeoPoint(40.743524, -73.988404);
     
-    private final static GeoPoint ROUTE456_STOP_POINT_0 = new MutableGeoPoint(40.743550, -73.988275);
+    private final static GeoPoint ROUTE456_STOP_POINT_0 = new MutableGeoPoint(40.743530, -73.988275);
     private final static GeoPoint ROUTE456_STOP_POINT_1 = new MutableGeoPoint(40.743535, -73.988240);
     private final static GeoPoint ROUTE456_STOP_POINT_2 = new MutableGeoPoint(40.743521, -73.988210);
     private final static GeoPoint ROUTE456_STOP_POINT_3 = new MutableGeoPoint(40.743507, -73.988176);
@@ -119,7 +119,7 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
                     cam.isMovingTowards = junction.getId().equals(JUNCTION_ID);
                 }
                 else {
-                    //System.out.println("Junction is null");
+                    // pass
                 }
                 cam.acceleration = vehData.getThrottle();
                 if (roadPos != null) {
@@ -149,7 +149,6 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
         var my_distance = getOs().getPosition().distanceTo(RSU_GEO_POINT);
         if (my_distance > MAX_DISTANCE_RANGE) {
             getLog().infoSimTime(this, "Vehicle is too far away from the traffic light.");
-            //System.out.println("Distance: " + my_distance + " Max Distance: " + MAX_DISTANCE_RANGE);
             if (vehicles.isEmpty()) {
                 getLog().infoSimTime(this, "No vehicles in range.");
                 return null;
@@ -165,8 +164,9 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
                 }
             }
             // send message to vehicle closest to the TL
-            if (closest_vehicle.getValue() < my_distance)
+            if (closest_vehicle.getValue() < my_distance){
                 return routing_builder.topoCast(closest_vehicle.getKey().id, 1);
+            }
             else
                 return null;
         }
@@ -241,19 +241,14 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
     } 
 
     private void sendTopoMessage() {
-        if (run) { // Run once every two iterations
 
-            if (ROAD_1_AREA.isPointInsideSquare(getOs().getPosition()) || ROAD_2_AREA.isPointInsideSquare(getOs().getPosition())) {
-                getLog().infoSimTime(this, "Vehicle is inside the detection area.");
-                send_britney_info();
-            }
-            else {
-                getLog().infoSimTime(this, "Vehicle is outside the detection area.");
-            }
-            run = false;
+        if (ROAD_1_AREA.isPointInsideSquare(getOs().getPosition()) || ROAD_2_AREA.isPointInsideSquare(getOs().getPosition())) {
+            getLog().infoSimTime(this, "Vehicle is inside the detection area.");
+            send_britney_info();
         }
-        else
-            run = true;
+        else {
+            getLog().infoSimTime(this, "Vehicle is outside the detection area.");
+        }
     }
 
     private void forward_detection_queue(Pair<GreenWaveMsg,Long> queue){
@@ -540,7 +535,14 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
             .distanceTo(getOs().getPosition()) > MAX_RSU_DISTANCE){
                 return;
             }
-            getLog().infoSimTime(this, "Received Control message from " + IpResolver.getSingleton().reverseLookup(receivedMessage.getRouting().getDestination().getAddress().address));
+            var destination = IpResolver.getSingleton().reverseLookup(receivedMessage.getRouting().getDestination().getAddress().address);
+            if (destination == null){
+                destination = " via Broadcast.";
+            }
+            else {
+                destination = " to " + destination;
+            }
+            getLog().infoSimTime(this, "Received Control message from " + IpResolver.getSingleton().reverseLookup(receivedMessage.getRouting().getSource().getSourceAddress().address) + destination );
             // Check if the message is for this vehicle
                 // If yes OBEY
                 // If not send to another vehicle behind
@@ -559,12 +561,11 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
             .distanceTo(getOs().getPosition()) > MAX_RSU_DISTANCE){
                 return;
             }
-            getLog().infoSimTime(this, "Received TL_Status message from " + IpResolver.getSingleton().reverseLookup(receivedMessage.getRouting().getSource().getSourceAddress().address));
+            getLog().infoSimTime(this, "Received TL_Status message from " + IpResolver.getSingleton().reverseLookup(receivedMessage.getRouting().getSource().getSourceAddress().address) + " via Broadcast");
             TL traffic_light = (TL) receivedMessage.getMessage().payload;
             // Change state of vehicle based on the state of the traffic light
             managed_by_traffic_light(traffic_light);
             // Check status and act accordingly
-            //System.out.println( getOs().getId() + " - Received TL message from " + traffic_light.id);
 
         }
         if (raw.payload instanceof InDetectionZone) {
@@ -572,7 +573,7 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
             .distanceTo(getOs().getPosition()) > MAX_DISTANCE_RANGE){
                 return;
             }
-            getLog().infoSimTime(this, "Received Detection message from " + IpResolver.getSingleton().reverseLookup(receivedMessage.getRouting().getDestination().getAddress().address) + " to " + receivedMessage.getMessage().destination);
+            getLog().infoSimTime(this, "Received Detection message from " + IpResolver.getSingleton().reverseLookup(receivedMessage.getRouting().getSource().getSourceAddress().address) + " to " + IpResolver.getSingleton().reverseLookup(receivedMessage.getRouting().getDestination().getAddress().address));
             // Forward to another next vehicle or TL
             forward_detection(receivedMessage);
         }

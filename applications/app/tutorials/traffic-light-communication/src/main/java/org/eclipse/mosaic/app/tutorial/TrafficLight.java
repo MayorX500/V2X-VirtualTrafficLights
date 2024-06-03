@@ -25,7 +25,10 @@ public class TrafficLight {
         for (int route = 1; route < 7 ; route++) {
             trafficLightStatus.put(String.valueOf(route), new HashMap<>());
             for (int lane = 0; lane < 10; lane++) { // it has more lanes than the real road
-                trafficLightStatus.get(String.valueOf(route)).put(String.valueOf(lane), TL.Status.RED);
+                if (route > 3)
+                    trafficLightStatus.get(String.valueOf(route)).put(String.valueOf(lane), TL.Status.GREEN);
+                else
+                    trafficLightStatus.get(String.valueOf(route)).put(String.valueOf(lane), TL.Status.RED);
             }
         }
     }
