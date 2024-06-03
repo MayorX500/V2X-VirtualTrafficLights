@@ -62,7 +62,7 @@ compile_status=$?
 # Notify the user if the compilation failed
 if [ $compile_status -ne 0 ]; then
     echo "Compilation failed with exit status $compile_status."
-    dunstify "Compilation failed with exit status $compile_status."
+    dunstify -u critical "Compilation failed with exit status $compile_status."
 else
     # Move the jar to the correct place
     echo "y" | cp $here_path/applications/app/tutorials/traffic-light-communication/target/traffic-light-communication-24.0-SNAPSHOT.jar $here_path/scenario/5thAvenue/application/traffic-light-communication-24.0-SNAPSHOT.jar
