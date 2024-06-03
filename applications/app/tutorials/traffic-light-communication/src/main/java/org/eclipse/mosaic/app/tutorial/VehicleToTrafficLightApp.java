@@ -38,7 +38,6 @@ import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.MutableGeoPoint;
 import org.eclipse.mosaic.lib.objects.addressing.AdHocMessageRoutingBuilder;
 import org.eclipse.mosaic.lib.objects.addressing.IpResolver;
-import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
@@ -47,35 +46,37 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
     private final static long TIME_INTERVAL = TIME.SECOND / 10;
     private final static String JUNCTION_ID = "42429874";
     private final static String TL_ID = "rsu_0";
-    private final static Integer MAX_DISTANCE_RANGE = 30;
+    private final static Integer MAX_DISTANCE_RANGE = 50;
     private final static Integer MAX_RSU_DISTANCE = 50;
     private final static long MAX_MESSAGE_WAIT = TIME.SECOND * 10;
+    private final static long STOP_TIME = 5 * TIME.SECOND;
 
     
     private final static GeoPoint RSU_GEO_POINT = new MutableGeoPoint(40.743457, -73.988281);
 
-    private final static GeoPoint ROUTE123_STOP_POINT_0 = new MutableGeoPoint(40.743503, -73.988432);
-    private final static GeoPoint ROUTE123_STOP_POINT_1 = new MutableGeoPoint(40.743523, -73.988407);
+    private final static GeoPoint ROUTE123_STOP_POINT_0 = new MutableGeoPoint(40.743499, -73.988424);
+    private final static GeoPoint ROUTE123_STOP_POINT_1 = new MutableGeoPoint(40.743524, -73.988404);
     
-    private final static GeoPoint ROUTE456_STOP_POINT_0 = new MutableGeoPoint(40.74357498932027, -73.98821495898788);
-    private final static GeoPoint ROUTE456_STOP_POINT_1 = new MutableGeoPoint(40.743556191906855, -73.98817472580086);
-    private final static GeoPoint ROUTE456_STOP_POINT_2 = new MutableGeoPoint(40.74354095075524, -73.98814388037415);
-    private final static GeoPoint ROUTE456_STOP_POINT_3 = new MutableGeoPoint(40.74352672565851, -73.98810699997745);
+    private final static GeoPoint ROUTE456_STOP_POINT_0 = new MutableGeoPoint(40.743550, -73.988275);
+    private final static GeoPoint ROUTE456_STOP_POINT_1 = new MutableGeoPoint(40.743535, -73.988240);
+    private final static GeoPoint ROUTE456_STOP_POINT_2 = new MutableGeoPoint(40.743521, -73.988210);
+    private final static GeoPoint ROUTE456_STOP_POINT_3 = new MutableGeoPoint(40.743507, -73.988176);
     
-    private final static GeoPoint ROAD_1_GEO_POINT_S = new MutableGeoPoint(40.743484, -73.988400);
-    private final static GeoPoint ROAD_1_GEO_POINT_E = new MutableGeoPoint(40.743626, -73.988620);
+    private final static GeoPoint ROAD_1_GEO_POINT_S = new MutableGeoPoint(40.743480, -73.988414);
+    private final static GeoPoint ROAD_1_GEO_POINT_E = new MutableGeoPoint(40.743710, -73.988811);
     private final static BrakingArea ROAD_1_AREA = new BrakingArea(ROAD_1_GEO_POINT_S, ROAD_1_GEO_POINT_E);
     
-    private final static GeoPoint ROAD_2_GEO_POINT_S = new MutableGeoPoint(40.743540, -73.988297);
-    private final static GeoPoint ROAD_2_GEO_POINT_E = new MutableGeoPoint(40.743618, -73.988081);
+    private final static GeoPoint ROAD_2_GEO_POINT_S = new MutableGeoPoint(40.743543, -73.988297);
+    private final static GeoPoint ROAD_2_GEO_POINT_E = new MutableGeoPoint(40.743725, -73.987997);
     private final static BrakingArea ROAD_2_AREA = new BrakingArea(ROAD_2_GEO_POINT_S, ROAD_2_GEO_POINT_E);
 
     public Map<String, CAM> vehicles = new HashMap<String, CAM>();
     public boolean run = false;
+    public boolean recievedStop = false;
     public Queue<Pair<GreenWaveMsg,Long>> message_queue = new LinkedList<Pair<GreenWaveMsg,Long>>();
 
-    public ItsBritneyBitch buildBitch() {
-        ItsBritneyBitch britney = new ItsBritneyBitch();
+    public InDetectionZone buildDetection() {
+        InDetectionZone britney = new InDetectionZone();
         britney.id = getOs().getId();
         britney.position = getOs().getPosition();
         var NavModule = getOs().getNavigationModule();
@@ -201,11 +202,12 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
             return;
         }
         int queue_size = message_queue.size();
+        getLog().infoSimTime(this, "Atempting to process queue");
         while (queue_size > 0){
             Pair<GreenWaveMsg,Long> queue = message_queue.poll();
             if (getOs().getSimulationTime() - queue.getRight() < MAX_MESSAGE_WAIT){
-                if (queue.getLeft().getMessage().payload instanceof ItsBritneyBitch){
-                    forward_bitch_queue(queue);
+                if (queue.getLeft().getMessage().payload instanceof InDetectionZone){
+                    forward_detection_queue(queue);
                 }
                 if (queue.getLeft().getMessage().payload instanceof Control){
                     forward_control_queue(queue);
@@ -229,13 +231,13 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
         MessageRouting routing = buildRouting_toRSU();
 
         if (routing == null) {
-            getLog().infoSimTime(this, "No vehicles in range. Nor the RSU.");
+            getLog().infoSimTime(this, "Neither the RSU nor any vehicle is in range.");
             return;
         }
 
-        ItsBritneyBitch message_data = buildBitch();
+        InDetectionZone message_data = buildDetection();
         getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing,new RawPayload(message_data, TL_ID)));
-        getLog().infoSimTime(this, "Sent message to " + IpResolver.getSingleton().reverseLookup(routing.getDestination().getAddress().address));
+        getLog().infoSimTime(this, "Sent Detection message to " + IpResolver.getSingleton().reverseLookup(routing.getDestination().getAddress().address));
     } 
 
     private void sendTopoMessage() {
@@ -254,32 +256,31 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
             run = true;
     }
 
-    private void forward_bitch_queue(Pair<GreenWaveMsg,Long> queue){
+    private void forward_detection_queue(Pair<GreenWaveMsg,Long> queue){
         var routing = buildRouting_toRSU();
         if (routing == null){
             message_queue.offer(queue);
             return;
         }
-        forward_bitch(queue.getLeft());
+        forward_detection(queue.getLeft());
     }
 
-    private void forward_bitch(GreenWaveMsg receivedMessage) {
+    private void forward_detection(GreenWaveMsg receivedMessage) {
         var routing = buildRouting_toRSU();
         if (routing == null){
             getLog().infoSimTime(this, "No vehicles in range. Nor the RSU.");
             Pair<GreenWaveMsg,Long> queue = Pair.of(receivedMessage,getOs().getSimulationTime());
-
             message_queue.offer(queue);
             return;
         }
-        ItsBritneyBitch message_Bitch = (ItsBritneyBitch) receivedMessage.getMessage().payload;
+        InDetectionZone message_Bitch = (InDetectionZone) receivedMessage.getMessage().payload;
         if (message_Bitch.TTL <= 0){
             // This message is no longer usefull
             return;
         } 
         message_Bitch.TTL = message_Bitch.TTL-1;
         getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing,new RawPayload(message_Bitch, TL_ID)));
-        getLog().infoSimTime(this, "Forwarded Britney message to " + IpResolver.getSingleton().reverseLookup(routing.getDestination().getAddress().address));
+        getLog().infoSimTime(this, "Forwarded Detection message to " + IpResolver.getSingleton().reverseLookup(routing.getDestination().getAddress().address));
     }
 
     private void forward_control_queue(Pair<GreenWaveMsg,Long> queue){
@@ -331,38 +332,58 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
             GeoPoint stopPoint = null;
             switch (control.rule.toString()) {
                 case "STOP":
-                    if (my_route.equals("1") || my_route.equals("2") || my_route.equals("3")) {
-                        if (my_lane.equals("0")) {
-                            stopPoint = ROUTE123_STOP_POINT_0;
-                        } else if (my_lane.equals("1")) {
-                            stopPoint = ROUTE123_STOP_POINT_1;
+                case "RED":
+                    if (recievedStop){
+                        return;
+                    } else {
+                        if (my_route.equals("1") || my_route.equals("2") || my_route.equals("3")) {
+                            if (my_lane.equals("0")) {
+                                stopPoint = ROUTE123_STOP_POINT_0;
+                            } else if (my_lane.equals("1")) {
+                                stopPoint = ROUTE123_STOP_POINT_1;
+                            }
+                        } else if (my_route.equals("4") || my_route.equals("5") || my_route.equals("6")) {
+                            switch (my_lane) {
+                                case "0": stopPoint = ROUTE456_STOP_POINT_0; break;
+                                case "1": stopPoint = ROUTE456_STOP_POINT_1; break;
+                                case "2": stopPoint = ROUTE456_STOP_POINT_2; break;
+                                case "3": stopPoint = ROUTE456_STOP_POINT_3; break;
+                            }
                         }
-                    } else if (my_route.equals("4") || my_route.equals("5") || my_route.equals("6")) {
-                        switch (my_lane) {
-                            case "0": stopPoint = ROUTE456_STOP_POINT_0; break;
-                            case "1": stopPoint = ROUTE456_STOP_POINT_1; break;
-                            case "2": stopPoint = ROUTE456_STOP_POINT_2; break;
-                            case "3": stopPoint = ROUTE456_STOP_POINT_3; break;
+                        if (stopPoint != null) {
+                            var cam = buildCAM();
+                            var stoping_point = stopPoint.distanceTo(getOs().getPosition());
+                            stoping_point = stoping_point - 10.0;
+                            getLog().infoSimTime(this, "Attempting to stop in " + stoping_point + " meters.");
+                            if (stoping_point <= 0.0 && cam.isMovingTowards){
+                                getLog().infoSimTime(this, "Vehicle is stopping now.");
+                                getOs().stopNow(VehicleStopMode.STOP, STOP_TIME);
+                                recievedStop = true;
+                            }
+                            else {
+                                getLog().infoSimTime(this, "Vehicle is not moving towards the stop point or the stop point is too far away.");
+                            }
+                        } else {
+                            getLog().infoSimTime(this, "No valid stop point found for the current route and lane.");
                         }
                     }
                     break;
                 case "SLOW_DOWN":
-                    getOs().slowDown(10, 1000);
+                case "YELLOW":
+                    getOs().slowDown(10, STOP_TIME);
                     break;
                 case "GO":
-                    getOs().resume();
+                case "GREEN":
+                    if (!recievedStop){
+                        return;
+                    } else {
+                        getOs().resume();
+                        getLog().infoSimTime(this, "Car is moving.");
+                        recievedStop = false;    
+                    }
                     break;
                 default:
                     break;
-            }
-    
-            if (stopPoint != null) {
-                getLog().infoSimTime(this, "Attempting to stop at: " + stopPoint);
-                var stoping_point = navModule.getClosestRoadPosition(stopPoint);
-                getLog().infoSimTime(this, "Closest road position: " + stoping_point);
-                getOs().stop(stoping_point, VehicleStopMode.STOP, 100);
-            } else {
-                getLog().infoSimTime(this, "No valid stop point found for the current route and lane.");
             }
         }
     }
@@ -379,7 +400,6 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
                 // Log current route, lane, and traffic light state
                 getLog().infoSimTime(this, "Current route: " + my_route + ", lane: " + my_lane);
                 getLog().infoSimTime(this, "Vehicle position: " + getOs().getPosition());
-                getLog().infoSimTime(this, "Traffic light state: " + traffic_light.state.toString());
     
                 // Log the stop point coordinates
                 GeoPoint stopPoint = null;
@@ -390,39 +410,55 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
     
                     switch (route_status.toString()) {
                         case "RED":
-                            if (my_route.equals("1") || my_route.equals("2") || my_route.equals("3")) {
-                                if (my_lane.equals("0")) {
-                                    stopPoint = ROUTE123_STOP_POINT_0;
-                                } else if (my_lane.equals("1")) {
-                                    stopPoint = ROUTE123_STOP_POINT_1;
-                                }
-                            } else if (my_route.equals("4") || my_route.equals("5") || my_route.equals("6")) {
-                                switch (my_lane) {
-                                    case "0": stopPoint = ROUTE456_STOP_POINT_0; break;
-                                    case "1": stopPoint = ROUTE456_STOP_POINT_1; break;
-                                    case "2": stopPoint = ROUTE456_STOP_POINT_2; break;
-                                    case "3": stopPoint = ROUTE456_STOP_POINT_3; break;
-                                }
-                            }
-    
-                            if (stopPoint != null) {
-                                getLog().infoSimTime(this, "Stopping at: " + stopPoint);
-                                var stopping_point = navModule.getClosestRoadPosition(stopPoint);
-                                getLog().infoSimTime(this, "Closest road position: " + stopping_point);
-                                getOs().stop(stopping_point, VehicleStopMode.STOP, 100);
+                            if (recievedStop){
+                                return;
                             } else {
-                                getLog().infoSimTime(this, "No valid stop point found for the current route and lane.");
-                            }
+                                if (my_route.equals("1") || my_route.equals("2") || my_route.equals("3")) {
+                                    if (my_lane.equals("0")) {
+                                        stopPoint = ROUTE123_STOP_POINT_0;
+                                    } else if (my_lane.equals("1")) {
+                                        stopPoint = ROUTE123_STOP_POINT_1;
+                                    }
+                                } else if (my_route.equals("4") || my_route.equals("5") || my_route.equals("6")) {
+                                    switch (my_lane) {
+                                        case "0": stopPoint = ROUTE456_STOP_POINT_0; break;
+                                        case "1": stopPoint = ROUTE456_STOP_POINT_1; break;
+                                        case "2": stopPoint = ROUTE456_STOP_POINT_2; break;
+                                        case "3": stopPoint = ROUTE456_STOP_POINT_3; break;
+                                    }
+                                }
+        
+                                if (stopPoint != null) {
+                                    var cam = buildCAM();
+                                    var stoping_point = stopPoint.distanceTo(getOs().getPosition());
+                                    stoping_point = stoping_point - 10.0;
+                                    getLog().infoSimTime(this, "Attempting to stop in " + stoping_point + " meters.");
+                                    if (stoping_point <= 0.0 && cam.isMovingTowards){
+                                        getLog().infoSimTime(this, "Vehicle is stopping now.");
+                                        getOs().stopNow(VehicleStopMode.STOP, STOP_TIME);
+                                        recievedStop = true;
+                                    }
+                                } else {
+                                    getLog().infoSimTime(this, "No valid stop point found for the current route and lane.");
+                                }
+                            }                           
                             break;
     
                         case "GREEN":
-                            // Keep moving
-                            getOs().resume();
+                            if (!recievedStop){
+                                return;
+                            } else {
+                                // Keep moving
+                                getOs().resume();
+                                getLog().infoSimTime(this, "Car is moving.");
+                                recievedStop = false;
+                            }
                             break;
     
                         case "YELLOW":
                             // Slow down
-                            getOs().slowDown(10, 1000);
+                            getOs().slowDown(1, STOP_TIME);
+                            getLog().infoSimTime(this, "Attempting to slow down to 1 m/s.");
                             break;
     
                         default:
@@ -447,7 +483,7 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
         // Clean Queue
         processQueue();
 
-        // Send Britney Message one every two iterations
+        // Send Detection Message one every two iterations
         sendTopoMessage();
 
         // Send CAM Message
@@ -491,7 +527,7 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
         if (raw.payload instanceof CAM) {
             CAM cam = (CAM) receivedMessage.getMessage().payload;
             if (cam.position.distanceTo(getOs().getPosition()) <= MAX_DISTANCE_RANGE) {
-                //System.out.println(getOs().getId() + " - Received CAM message from " + cam.id + " at " + cam.position.toString());
+                getLog().infoSimTime(this, "Received CAM message from " + cam.id);
                 vehicles.put(cam.id, cam);
             }
             else {
@@ -504,6 +540,7 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
             .distanceTo(getOs().getPosition()) > MAX_RSU_DISTANCE){
                 return;
             }
+            getLog().infoSimTime(this, "Received Control message from " + IpResolver.getSingleton().reverseLookup(receivedMessage.getRouting().getDestination().getAddress().address));
             // Check if the message is for this vehicle
                 // If yes OBEY
                 // If not send to another vehicle behind
@@ -522,6 +559,7 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
             .distanceTo(getOs().getPosition()) > MAX_RSU_DISTANCE){
                 return;
             }
+            getLog().infoSimTime(this, "Received TL_Status message from " + IpResolver.getSingleton().reverseLookup(receivedMessage.getRouting().getSource().getSourceAddress().address));
             TL traffic_light = (TL) receivedMessage.getMessage().payload;
             // Change state of vehicle based on the state of the traffic light
             managed_by_traffic_light(traffic_light);
@@ -529,17 +567,14 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
             //System.out.println( getOs().getId() + " - Received TL message from " + traffic_light.id);
 
         }
-        if (raw.payload instanceof ItsBritneyBitch) {
+        if (raw.payload instanceof InDetectionZone) {
             if (receivedV2xMessage.getMessage().getRouting().getSource().getSourcePosition()
             .distanceTo(getOs().getPosition()) > MAX_DISTANCE_RANGE){
                 return;
             }
+            getLog().infoSimTime(this, "Received Detection message from " + IpResolver.getSingleton().reverseLookup(receivedMessage.getRouting().getDestination().getAddress().address) + " to " + receivedMessage.getMessage().destination);
             // Forward to another next vehicle or TL
-            forward_bitch(receivedMessage);
-
-            //var message = (ItsBritneyBitch) receivedMessage.getMessage().payload;
-            //System.out.println( getOs().getId() + " - Received Britney message from " + message.id + " to " + receivedMessage.getMessage().destination );
-
+            forward_detection(receivedMessage);
         }
     }
 

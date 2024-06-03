@@ -32,9 +32,6 @@ import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.RoadSideUnitOperatingSystem;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.enums.AdHocChannel;
-import org.eclipse.mosaic.lib.geo.GeoPoint;
-import org.eclipse.mosaic.lib.geo.MutableGeoPoint;
-import org.eclipse.mosaic.lib.objects.addressing.AdHocMessageRoutingBuilder;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
@@ -46,48 +43,28 @@ import org.eclipse.mosaic.rti.TIME;
  */
 public class RoadSideUnitApp extends AbstractApplication<RoadSideUnitOperatingSystem> implements CommunicationApplication {
     /**
-     * Interval at which messages are sent (every 0.25 seconds).
+     * Interval at which messages are sent (every 0.5 seconds).
      */
-        private final static long TIME_INTERVAL = TIME.SECOND / 4;
+    private final static long TIME_INTERVAL = TIME.SECOND / 10;
     private final static String RSU_ID = "rsu_0";
-    private final static Integer MAX_DISTANCE_RANGE = 30;
-    private final static Integer MAX_RSU_DISTANCE = 70;
-    private final static long MAX_MESSAGE_WAIT = TIME.SECOND * 100;
+    private final static Integer MAX_DISTANCE_RANGE = 50;
+    public final static long TRAFFIC_TIMER = 30 * TIME.SECOND;
 
-    private final static int CAM_HASH = new CAM().hashCode();
-    private final static int ITS_BRITNEY_HASH = new ItsBritneyBitch().hashCode();
-    
-    private final static GeoPoint RSU_GEO_POINT = new MutableGeoPoint(40.743456325244175, -73.98820410000964);
-
-    private final static GeoPoint ROUTE123_STOP_POINT_0 = new MutableGeoPoint(40.74352012132382, -73.98837723293325);
-    private final static GeoPoint ROUTE123_STOP_POINT_1 = new MutableGeoPoint(40.743553143747434, -73.98835644581);
-
-    private final static GeoPoint ROUTE456_STOP_POINT_0 = new MutableGeoPoint(40.74357498932027, -73.98821495898788);
-    private final static GeoPoint ROUTE456_STOP_POINT_1 = new MutableGeoPoint(40.743556191906855, -73.98817472580086);
-    private final static GeoPoint ROUTE456_STOP_POINT_2 = new MutableGeoPoint(40.74354095075524, -73.98814388037415);
-    private final static GeoPoint ROUTE456_STOP_POINT_3 = new MutableGeoPoint(40.74352672565851, -73.98810699997745);
-    private final static GeoPoint ROUTE456_STOP_POINT_4 = new MutableGeoPoint(40.74351148448957, -73.98807682512994);
-    
-    private final static GeoPoint ROAD_1_GEO_POINT_S = new MutableGeoPoint(40.74347018352965, -73.98833612944004);
-    private final static GeoPoint ROAD_1_GEO_POINT_E = new MutableGeoPoint(40.74383698515376, -73.98897986094623);
-    private final static BrakingArea ROAD_1_AREA = new BrakingArea(ROAD_1_GEO_POINT_S, ROAD_1_GEO_POINT_E);
-    
-    private final static GeoPoint ROAD_2_GEO_POINT_S = new MutableGeoPoint(40.74353876044327, -73.98826219097081);
-    private final static GeoPoint ROAD_2_GEO_POINT_E = new MutableGeoPoint(40.74367386310809, -73.98793752269356);
-    private final static BrakingArea ROAD_2_AREA = new BrakingArea(ROAD_2_GEO_POINT_S, ROAD_2_GEO_POINT_E);
 
     public Map<String,CAM> car_table = new HashMap<String,CAM>();
-    public Map<String,ItsBritneyBitch> car_information = new HashMap<String,ItsBritneyBitch>();
+    public Map<String,InDetectionZone> car_information = new HashMap<String,InDetectionZone>();
     public boolean is_off = false;
     public Map<String,Map<String,Set<String>>> lane_queue = new HashMap<String,Map<String,Set<String>>>();
     public TrafficLight traffic_light = new TrafficLight();
+    public long last_state_change = 0;
 
     public void sample() {
         getOs().getEventManager().addEvent(
                 getOs().getSimulationTime() + TIME_INTERVAL, this
         );
         sendState();
-        // TODO: RUN TRAFFIC LIGHT MANAGER
+
+        manage_traffic();
     }
 
     public TL buildState(){
@@ -131,33 +108,55 @@ public class RoadSideUnitApp extends AbstractApplication<RoadSideUnitOperatingSy
         return control;
     }
 
-    public void send_control(String route, String lane) {
-        AdHocMessageRoutingBuilder routing = getOperatingSystem().getAdHocModule().createMessageRouting();
+    public MessageRouting routingTo_car(String car_id, String route, String lane) {
+        if (car_table.isEmpty())
+            return null;
+        else{
+            if (car_table.containsKey(car_id)){
+                return getOperatingSystem().getAdHocModule().createMessageRouting().topoCast(car_id, 1);
+            } else {
+                String best_car = car_table.keySet().iterator().next();
+                for (Map.Entry<String, CAM> car : car_table.entrySet()) {
+                    if (car.getValue().route.equals(route) && car.getValue().lane == Integer.parseInt(lane)){
+                        if (car.getValue().position.distanceTo(getOs().getPosition()) < car_table.get(best_car).position.distanceTo(getOs().getPosition())) {
+                            best_car = car.getKey();
+                        }
+                    }
+                }
+                return getOperatingSystem().getAdHocModule().createMessageRouting().topoCast(best_car, 1);
+            }
+        }
+    }
 
+    public void send_control(String route, String lane) {
         var car_lane_queue = lane_queue.get(route).get(lane);
         for (String car : car_lane_queue) {
-
             // Check if the car is in the range of the RSU
             // If it is not in the range, send a message to the nearest Vehicle
-        }
-
-        
+            var routing = routingTo_car(car, route, lane);
+            if (routing != null){
+                var control = build_control(route, lane, car);
+                getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing, new RawPayload(control, "veh_x")));
+                getLog().infoSimTime(this, "Sent control message to " + car);
+            }
+            else{
+                getLog().infoSimTime(this, "No car found to send control message");
+            }
+        }      
     }
 
     public void manage_traffic() {
-        // Check if there are cars in the queue
-
-        for (Map.Entry<String, Map<String, Set<String>>> route : lane_queue.entrySet()) {
-            for (Map.Entry<String, Set<String>> lane : route.getValue().entrySet()) {
-                if (lane.getValue().size() > 0) {
-                    // TODO: Implement traffic management based on the queues
-                    // Check if the traffic light is green
-                    // If it is green send a controllet message to the cars in the queue
-                    // 
+        var time_now = getOs().getSimulationTime();
+        if (time_now - last_state_change > TRAFFIC_TIMER){
+            last_state_change = time_now;
+            getLog().infoSimTime(this, "Changing traffic light state");
+            for (Map.Entry<String, Map<String, Set<String>>> route : lane_queue.entrySet()) {
+                for (Map.Entry<String, Set<String>> lane : route.getValue().entrySet()) {
+                    traffic_light.reverse_state(route.getKey(), lane.getKey());
+                    send_control(route.getKey(), lane.getKey());    
                 }
             }
         }
-
     }
 
     @Override
@@ -171,6 +170,8 @@ public class RoadSideUnitApp extends AbstractApplication<RoadSideUnitOperatingSy
                 .create());
         getLog().infoSimTime(this, "Activated WLAN Module");
         sample();
+
+        last_state_change = getOs().getSimulationTime();
 
         for (int route = 1; route < 7; route++) {
             lane_queue.put(String.valueOf(route), new HashMap<String, Set<String>>());
@@ -194,14 +195,15 @@ public class RoadSideUnitApp extends AbstractApplication<RoadSideUnitOperatingSy
         var raw = receivedMessage.getMessage();
         String send_to = receivedMessage.getMessage().destination;
 
-        if (raw.payload instanceof ItsBritneyBitch) {
+        if (raw.payload instanceof InDetectionZone) {
             if (send_to.equals(RSU_ID)) {
-                ItsBritneyBitch its_britney = (ItsBritneyBitch) receivedMessage.getMessage().payload;
+                InDetectionZone its_britney = (InDetectionZone) receivedMessage.getMessage().payload;
                 if (receivedV2xMessage.getMessage().getRouting().getSource().getSourcePosition()
                 .distanceTo(getOs().getPosition()) > MAX_DISTANCE_RANGE){
                     car_table.remove(its_britney.id);
                     return;
                 }
+                getLog().infoSimTime(this, "Received InDetectionZone message from " + its_britney.id + " at route " + its_britney.route + " and lane " + its_britney.lane);
                 
                 var route = String.valueOf(its_britney.route);
                 var lane = String.valueOf(its_britney.lane);
@@ -221,6 +223,7 @@ public class RoadSideUnitApp extends AbstractApplication<RoadSideUnitOperatingSy
                 return;
             }
             car_table.put(cam.id, cam);
+            getLog().infoSimTime(this, "Received CAM message from " + cam.id + " at route " + cam.route + " and lane " + cam.lane);
 
             // Check if the car is moving towards the RSU/TL or away from it
             if (!cam.isMovingTowards){

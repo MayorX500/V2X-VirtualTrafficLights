@@ -30,6 +30,20 @@ public class TrafficLight {
         }
     }
 
+    public boolean reverse_state(String route, String lane) {
+        if (trafficLightStatus.containsKey(route) && trafficLightStatus.get(route).containsKey(lane)) {
+            if (trafficLightStatus.get(route).get(lane) == TL.Status.RED) {
+                trafficLightStatus.get(route).put(lane, TL.Status.GREEN);
+            }
+            else {
+                trafficLightStatus.get(route).put(lane, TL.Status.RED);
+            }
+            return true;
+        }
+        else
+            return false;
+    }
+
     public boolean change_state(String route, String lane, TL.Status status) {
         if (trafficLightStatus.containsKey(route) && trafficLightStatus.get(route).containsKey(lane)) {
             trafficLightStatus.get(route).put(lane, status);
