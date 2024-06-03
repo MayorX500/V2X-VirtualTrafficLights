@@ -86,22 +86,28 @@
   ],
   "vehicles": [
     {
-      "startingTime": "10 s",
+      "startingTime": "0 s",
       "route": "1",
-      "maxNumberVehicles": 50,
+      "maxNumberVehicles": 200,
       "types": [{ "name": "TrafficLightCarRed" }]
     },
     {
-      "startingTime": "30 s",
+      "startingTime": "0 s",
       "route": "3",
-      "maxNumberVehicles": 50,
+      "maxNumberVehicles": 20,
       "types": [{ "name": "TrafficLightCarGreen" }]
     },
     {
       "startingTime": "0 s",
       "route": "5",
-      "maxNumberVehicles": 50,
+      "maxNumberVehicles": 250,
       "types": [{ "name": "TrafficLightCarBlue" }]
+    },
+    {
+      "startingTime": "0 s",
+      "route": "5",
+      "maxNumberVehicles": 250,
+      "types": [{ "name": "TrafficLightCarYellow" }]
     }
   ]
 }
